@@ -12,6 +12,13 @@ Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 //280 = 180 degrees
 // Servo moves 0.643 degrees per pulse length count
 
+//Link Lengths in mm
+#define BaseOffset 89
+#define ShoulderElbow 150
+#define ElbowWrist 191.64
+#define WristWrist 11.66
+#define WristPenTip TBC
+
 //Defines for servo motors, relating to connector position on breakout board
 #define ShoulderRotate 0
 #define ShoulderElevate 1
@@ -20,7 +27,7 @@ Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 #define WristElevate 4
 
 //Array to hold current position of each servo
-int positions[5] = {0,0,0,0,0};
+int positions[5] = {90,90,90,90,90};
 
 //Function to move specified servo to specified degrees
 void GoDegrees(int servo, int degrees){
@@ -34,6 +41,7 @@ void GoDegrees(int servo, int degrees){
 //Function to move specified servo by a specified number of degrees.
 void MoveBy(int servo, int degrees){
   if(degrees>=0 && degrees <181){
+    if 
     int Pulses = degrees/0.643;
     pwm.setPWM(servo, 0, SERVOMIN+Pulses);
   }
