@@ -1,5 +1,5 @@
-#include <Wire.h>
-#include <Adafruit_PWMServoDriver.h>
+#include <Wire.h> //I2C Library
+#include <Adafruit_PWMServoDriver.h>//PWM breakout board library
 
 Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver(); 
 
@@ -11,14 +11,18 @@ Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 //SERVOMAX - SERVOMIN = 280 pulse length count
 //280 = 180 degrees
 // Servo moves 0.643 degrees per pulse length count
+
+//Defines for servo motors, relating to connector position on breakout board
 #define ShoulderRotate 0
 #define ShoulderElevate 1
 #define Elbow 2
 #define WristRotate 3
 #define WristElevate 4
 
+//Array to hold current position of each servo
 int positions[5] = {0,0,0,0,0};
 
+//Function to move specified servo to specified degrees
 void GoDegrees(int servo, int degrees){
   if(degrees>=0 && degrees <181){
     positions[servo] = degrees
@@ -27,6 +31,7 @@ void GoDegrees(int servo, int degrees){
   }
 }
 
+//Function to move specified servo by a specified number of degrees.
 void MoveBy(int servo, int degrees){
   if(degrees>=0 && degrees <181){
     int Pulses = degrees/0.643;
@@ -34,7 +39,7 @@ void MoveBy(int servo, int degrees){
   }
 }
 
-
+//Setup Function 
 void setup() {
   Serial.begin(9600);
   Serial.println("8 channel Servo test!");
