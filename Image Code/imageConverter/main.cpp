@@ -13,7 +13,7 @@
 #define CANVAS_HEIGHT 960
 #define CLEARANCE 30 //3mm clearence from the pen touching the edge
 
-#define IMAGE_PATH "C:\\Users\\dbintley\\OneDrive - University of Plymouth\\Year 2\\ROCO224\\Image Code\\img1.png"
+#define IMAGE_PATH "C:\\Users\\dbintley\\OneDrive - University of Plymouth\\Year 2\\ROCO224\\Image Code\\img3.png"
 #define THRESHOLD 127 //sets greyscale -> binary threshold
 
 #define PEN_SIZE 22        //true pen size
@@ -204,23 +204,26 @@ int main()
     while(waitKey(10)!=' ')
         imshow("View", frame);
 
-    cout<<"\tmoveToTarget("+to_string(drawPath.front().to.x*10)+","+to_string(drawPath.front().to.y*10)+",restZ,stepperDelay);"<<endl;
+    cout<<"\t{"+to_string(drawPath.front().to.x*10)+","+to_string(drawPath.front().to.y*10)+",travel},"<<endl;
+    int count = 0;
     for(auto i:drawPath)
     {
+        count++;
         if(i.type==draw)
         {
-            cout<<"\tmoveToTarget("+to_string(i.to.x*10)+","+to_string(i.to.y*10)+",drawZ,stepperDelay);"<<endl;
+            cout<<"\t{"+to_string(i.to.x*10)+","+to_string(i.to.y*10)+",draw};"<<endl;
         }
         else
         {
-            cout<<"\tmoveToTarget(currentX,currentY,travelZ,stepperDelay);"<<endl;
-            cout<<"\tmoveToTarget("+to_string(i.to.x*10)+","+to_string(i.to.y*10)+",travelZ,stepperDelay);"<<endl;
-            cout<<"\tmoveToTarget(currentX,currentY,drawZ,stepperDelay);"<<endl;
+            cout<<"\t{"+to_string(i.to.x*10)+","+to_string(i.to.y*10)+",travel};"<<endl;
+            cout<<"\t{"+to_string(i.to.x*10)+","+to_string(i.to.y*10)+",travel};"<<endl;
+            cout<<"\t{"+to_string(i.to.x*10)+","+to_string(i.to.y*10)+",draw};"<<endl;
+            count += 2;
         }
     }
 
-    cout<<"\tmoveToTarget("+to_string(drawPath.back().to.x*10)+","+to_string(drawPath.back().to.y*10)+",restZ,stepperDelay);"<<endl;
-
+    cout<<"\t{"+to_string(drawPath.back().to.x*10)+","+to_string(drawPath.back().to.y*10)+",travel};"<<endl;
+    cout<<"\tThe number of elements = "+to_string(count+2)<<endl;
     return 0;
 }
 
