@@ -1,5 +1,6 @@
 #include <Wire.h> //I2C Library
 #include <Adafruit_PWMServoDriver.h>//PWM breakout board library
+#include <math.h> // Math Library
 
 Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver(); 
 
@@ -26,13 +27,35 @@ Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 #define WristRotate 3
 #define WristElevate 4
 
+
+int positionNumber = 10;
+
+float position[10][2] = 
+{
+  {1,1},
+  {1,1},
+  {1,1},
+  {1,1},
+  {1,1},
+  {1,1},
+  {1,1},
+  {1,1},
+  {1,1},
+  {1,1},
+};
+
+float angles [10][2];
+
+
+
+
 //Array to hold current position of each servo
 int positions[5] = {90,90,90,90,90};
 
 //Function to move specified servo to specified degrees
 void GoDegrees(int servo, int degrees){
   if(degrees>=0 && degrees <181){
-    positions[servo] = degrees
+    positions[servo] = degrees;
     int Pulses = degrees/0.643;
     pwm.setPWM(servo, 0, SERVOMIN+Pulses);
   }
@@ -41,7 +64,7 @@ void GoDegrees(int servo, int degrees){
 //Function to move specified servo by a specified number of degrees.
 void MoveBy(int servo, int degrees){
   if(degrees>=0 && degrees <181){
-    if 
+    //if 
     int Pulses = degrees/0.643;
     pwm.setPWM(servo, 0, SERVOMIN+Pulses);
   }
@@ -80,4 +103,33 @@ void loop() {
   Serial.println("8 channel Servo test done!");
   */
 }
+
+void determineAngles(float * shoulderLiftAngle, float * shoulderRotAngle, float * elbowAngle, float * wristAngle, float x, float y){
+  
+  // This gives us the angle form 0 that the shoulder rotational joint should be at.
+  *shoulderRotAngle = tan(x/y); 
+
+  // This gives us the distance from the center of the base in mm
+  float distance = x/sin(*shoulderRotAngle); 
+
+  //This gives us the angle from horizontle of the shoulder angle.
+  *shoulderLiftAngle = acos((ShoulderElbow*ShoulderElbow+distance*distance-ElbowWrist*ElbowWrist)/(2*ShoulderElbow*distance)); 
+
+  //This converts shoulderLiftAngle to be the angle from vertical
+  *shoulderLiftAngle = 90-*shoulderLiftAngle;
+
+  //This gives us the angle between the Humerous and the forearm at the elbow
+  *elbowAngle = acos((ShoulderElbow*ShoulderElbow-ElbowWrist*ElbowWrist-distance*distance)/(2*ShoulderElbow*ElbowWrist)); 
+
+  //This gives us the angle of the wrist such that the pencil remains vertical.
+  *wristAngle = 90-(180-*elbowAngle-*shoulderLiftAngle);
+}
+
+void calculateAllAngles(){
+  for(int i = 0; i<positionNumber; i++){
+    determineAngles(&angles[i][0],&angles[i][1],&angles[i][2],&angles[i][3],position[i][0],position[i][1]);
+  }
+
+}
+
 
