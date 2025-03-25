@@ -49,13 +49,14 @@ float position[458][3] =
   {1,1},
 };
 
-float angles [10][2];
+float angles [10][3];
 
 
 
 
 //Array to hold current position of each servo
 int positions[5] = {90,90,90,90,90};
+int targets[5];
 
 //Function to move specified servo to specified degrees
 void GoDegrees(int servo, int degrees){
