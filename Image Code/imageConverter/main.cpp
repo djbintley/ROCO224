@@ -206,16 +206,20 @@ int main()
 
     cout<<"\t{"+to_string(drawPath.front().to.x*10)+","+to_string(drawPath.front().to.y*10)+",0},"<<endl;
     int count = 0;
+    int lastx = 0;
+    int lasty = 0;
     for(auto i:drawPath)
     {
         count++;
         if(i.type==draw)
         {
             cout<<"\t{"+to_string(i.to.x*10)+","+to_string(i.to.y*10)+",90},"<<endl;
+            lastx = i.to.x*10;
+            lasty = i.to.y*10;
         }
         else
         {
-            cout<<"\t{"+to_string(i.to.x*10)+","+to_string(i.to.y*10)+",0},"<<endl;
+            cout<<"\t{"+to_string(lastx)+","+to_string(lasty)+",0},"<<endl;
             cout<<"\t{"+to_string(i.to.x*10)+","+to_string(i.to.y*10)+",0},"<<endl;
             cout<<"\t{"+to_string(i.to.x*10)+","+to_string(i.to.y*10)+",90},"<<endl;
             count += 2;
