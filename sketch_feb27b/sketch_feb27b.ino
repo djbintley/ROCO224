@@ -49,7 +49,7 @@ float position[458][3] =
   {1,1},
 };
 
-float angles [10][3];
+float angles [10][4];
 
 
 
@@ -74,6 +74,7 @@ void GoDegrees(int servo, int degrees){
 
 //Setup Function 
 void setup() {
+  calculateAllAngles();
   Serial.begin(9600);
   Serial.println("8 channel Servo test!");
   pwm.begin();
@@ -82,13 +83,19 @@ void setup() {
   delay(10);
 }
 
-void loop() {
+void loop() {/*
   GoDegrees(ShoulderRotate, 90);
   GoDegrees(ShoulderElevate, 90);
   GoDegrees(Elbow, 90);
   GoDegrees(WristRotate, 90);
   GoDegrees(WristElevate, 90);
   delay(500);
+    */
+  for(int i = 0; i< positionNumber; i++){
+
+    setAllServos(angles[i][0],angles[i][1],angles[i][2],angles[i][3],position[i][2]);
+  }
+  
 
 /*
   for (uint16_t pulselen = SERVOMIN; pulselen < SERVOMAX; pulselen++) {
@@ -130,6 +137,14 @@ void calculateAllAngles(){
     determineAngles(&angles[i][0],&angles[i][1],&angles[i][2],&angles[i][3],position[i][0],position[i][1]);
   }
 
+}
+
+void setAllServos(int angle1, int angle2, int angle3, int angle4, int angleDraw){
+  GoDegrees(ShoulderRotate,angle1);
+  GoDegrees(ShoulderElevate,angle2);
+  GoDegrees(Elbow, angle3);
+  GoDegrees(WristElevate, angle4);
+  GoDegrees(WristRotate, angleDraw);
 }
 
 
