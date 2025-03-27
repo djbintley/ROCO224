@@ -33,25 +33,85 @@ Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 #define WristElevate 4
 
 
-int positionNumber = 10;
+int positionNumber = 63;
 
-float position[458][3] = 
+float position[63][3] = 
 {
-  {1,1},
-  {1,1},
-  {1,1},
-  {1,1},
-  {1,1},
-  {1,1},
-  {1,1},
-  {1,1},
-  {1,1},
-  {1,1},
+  {2370,3790,0},
+  {0,0,0},
+  {2370,3790,0},
+  {2370,3790,90},
+  {1280,4880,90},
+  {1280,4880,0},
+  {1300,5080,0},
+  {1300,5080,90},
+  {2560,3820,90},
+  {2750,3850,90},
+  {1350,5250,90},
+  {1440,5380,90},
+  {2900,3920,90},
+  {3030,4010,90},
+  {1530,5510,90},
+  {1630,5630,90},
+  {3150,4110,90},
+  {3260,4220,90},
+  {1760,5720,90},
+  {1890,5810,90},
+  {3350,4350,90},
+  {3410,4510,90},
+  {2070,5850,90},
+  {2230,5910,90},
+  {3470,4670,90},
+  {3490,4870,90},
+  {2450,5910,90},
+  {2480,6010,90},
+  {2160,5990,90},
+  {1840,5880,90},
+  {1520,5660,90},
+  {1290,5340,90},
+  {1180,4860,90},
+  {1230,4540,90},
+  {1380,4220,90},
+  {1510,4060,90},
+  {1830,3830,90},
+  {2150,3720,90},
+  {2470,3710,90},
+  {2790,3770,90},
+  {3110,3940,90},
+  {3270,4070,90},
+  {3480,4390,90},
+  {3580,4710,90},
+  {3570,5030,90},
+  {3460,5350,90},
+  {3370,5510,90},
+  {3070,5800,90},
+  {2750,5950,90},
+  {2510,6010,90},
+  {2510,6010,0},
+  {2710,5870,0},
+  {2710,5870,90},
+  {3450,5130,90},
+  {3450,5130,0},
+  {2120,3820,00},
+  {2120,3820,90},
+  {1290,4650,90},
+  {1290,4650,0},
+  {1460,4260,0},
+  {1460,4260,90},
+  {1720,4000,90},
+  {1720,4000,0},
 };
 
-float angles [10][4];
+float angles [63][4];
 
-
+int MinMax[5][2] =
+{
+  {0, 180},
+  {30, 176},
+  {60, 160},
+  {0, 157},
+  {0, 156},
+};
 
 
 //Array to hold current position of each servo
@@ -60,8 +120,9 @@ int targets[5];
 
 //Function to move specified servo to specified degrees
 void GoDegrees(int servo, int degrees){
-  if(degrees>=0 && degrees <181){
+  if((degrees >= MinMax[servo][0]) && (degrees <= MinMax[servo][1])){
     positions[servo] = degrees;
+    Serial.print(positions[servo]);
     if (servo<3 && servo>=0){
       int Pulses = degrees/0.643;
       pwm.setPWM(servo, 0, SERVOMIN+Pulses);
@@ -74,13 +135,14 @@ void GoDegrees(int servo, int degrees){
 
 //Setup Function 
 void setup() {
-  calculateAllAngles();
+  //calculateAllAngles();
   Serial.begin(9600);
   Serial.println("8 channel Servo test!");
   pwm.begin();
   pwm.setOscillatorFrequency(27000000);
   pwm.setPWMFreq(SERVO_FREQ);  // Analog servos run at ~50 Hz updates
   delay(10);
+  Serial.println("Enter servo number and angle (e.g., 2 90):");
 }
 
 void loop() {/*
@@ -90,12 +152,27 @@ void loop() {/*
   GoDegrees(WristRotate, 90);
   GoDegrees(WristElevate, 90);
   delay(500);
-    */
   for(int i = 0; i< positionNumber; i++){
 
     setAllServos(angles[i][0],angles[i][1],angles[i][2],angles[i][3],position[i][2]);
   }
-  
+  */
+  if (Serial.available()) {
+    int servoNum, angle;
+    servoNum = Serial.parseInt();
+    angle = Serial.parseInt();
+    
+    if (servoNum >= 0 && servoNum < 16 && angle >= 0 && angle <= 180 && (angle+servoNum>0)) {
+      GoDegrees(servoNum, angle);
+      Serial.print("Servo ");
+      Serial.print(servoNum);
+      Serial.print(" set to ");
+      Serial.print(angle);
+      Serial.println(" degrees");
+    } else {
+      Serial.println("Invalid input. Use: servo_number angle (e.g., 2 90)");
+    }
+  }
 
 /*
   for (uint16_t pulselen = SERVOMIN; pulselen < SERVOMAX; pulselen++) {
