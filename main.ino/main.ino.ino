@@ -231,6 +231,29 @@ void goPreciseAll(int sRot, int sLift, int elbow, int wRot, int wLift){
 
 
 }
+void determineAngles(float* shoulderLiftAngle, float * shoulderRotAngle, float * elbowAngle, float * wristAngle, float x, float y){
+// This gives us the angle from 0 that the shoulder rotational joint should be at.
+  *shoulderRotAngle = tan(x/y); 
+
+  // This gives us the distance from the center of the base in mm
+  float distance = x/sin(*shoulderRotAngle); 
+
+  //This gives us the angle from horizontle of the shoulder angle.
+  *shoulderLiftAngle = acos((ShoulderElbow*ShoulderElbow+distance*distance-ElbowWrist*ElbowWrist)/(2*ShoulderElbow*distance)); 
+
+  //This converts shoulderLiftAngle to be the angle from vertical
+  *shoulderLiftAngle = 180-*shoulderLiftAngle;
+
+  //This gives us the angle between the Humerous and the forearm at the elbow
+  *elbowAngle = acos((ShoulderElbow*ShoulderElbow-ElbowWrist*ElbowWrist-distance*distance)/(2*ShoulderElbow*ElbowWrist));
+
+  //Converts the elbow degree to match with 90 degrees being the arm being at 90 degrees to the humerous
+  *elbowAngle  = 180-*elbowAngle;
+
+  //This gives us the angle of the wrist such that the pencil remains vertical.
+  *wristAngle = 90-(180-*elbowAngle-*shoulderLiftAngle);
+}
+
 
 
 
@@ -247,6 +270,13 @@ void servoInit(){
 }
 
 
+void calculateAllAngles(){
+  for(int i = 0; i<positionNum; i++){
+    determineAngles(&angles[i][0],&angles[i][1],&angles[i][2],&angles[i][3],position[i][0],position[i][1]);
+  }
+
+}
+
 
 void setup() {
   //Initialize the serial output (UART)
@@ -261,6 +291,8 @@ void setup() {
 
   //Set all servos to 90 degrees
   servoInit();
+
+  calculateAllAngles();
 
 
   Serial.println("Setup Complete");
