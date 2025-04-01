@@ -130,6 +130,41 @@ int MinMax[5][2] =
   {0, 156},
 };
 
+
+void changepos(int sRot, int sLift, int elbow, int wRot, int wLift){
+  int tempAngles [5] = {servoAngles[0]*1.555,servoAngles[1]*1.555,servoAngles[2]*1.555,servoAngles[3]*2.222,servoAngles[4]*2.222};
+  int targets [5] = {sRot*1.555, sLift*1.555, elbow*1.555, wRot*2.222, wLift*2.222}; 
+  int sRotchange = abs(servoAngles[0]-sRot); 
+  int sLiftchange = abs(servoAngles[1]-sLift); 
+  int elbowchange = abs(servoAngles[2]-elbow); 
+  int wRotchange = abs(servoAngles[3]-wRot); 
+  int wLiftchange = abs(servoAngles[4]-wLift); 
+  int pulseses = 0;
+  int smallest = min(sRotchange,min(sLiftchange,min(elbowchange,min(wRotchange,wLiftchange))));
+  if (smallest == sRotchange || smallest == sLiftchange || smallest == sRotchange){
+    pulseses = smallest/0.643;  
+  }else{
+    pulseses = smallest/0.45; 
+  }
+  int steps[5] = {(sRotchange*1.555)/pulseses,(sLiftchange*1.555)/pulseses,(elbowchange*1.555)/pulseses,(wRotchange*2.222)/pulseses,(wLiftchange*2.222)/pulseses};
+  for (int i = 0; i <5, i++;){
+    if (tempAngles[i] - targets[i] > 0){
+      steps[i] = steps[i]*-1; 
+    }
+  }
+  if (pulseses < 50)pulseses = 50;
+  while (tempAngles[0] >= targets[0]-3 && tempAngles[0] <= targets[0]+3 && tempAngles[1] >= targets[1]-3 && tempAngles[1] <= targets[1]+3 && tempAngles[2] >= targets[2]-3 && tempAngles[2] <= targets[2]+3 && tempAngles[3] >= targets[3]-3 && tempAngles[3] <= targets[3]+3 && tempAngles[4] >= targets[4]-3 && tempAngles[4] <= targets[4]+3){
+    for (int j = 0; j <5, j++;){
+      if (tempAngles[j] >= targets[j]-3 && tempAngles[j] <= targets[j]+3);else{   //if the servo isn't close to the target yet, move by step
+        pwm.setPWM(j, 0, SERVOMIN + tempAngles[j] + steps[j]);
+        tempAngles[j] += steps[j];
+      }
+    }
+  }
+
+}
+
+
 void goPreciseDegrees(int servo, int newPos) {
   int steps = 500;
   int target = constrain(newPos, MinMax[servo][0], MinMax[servo][1]);
@@ -299,15 +334,21 @@ void setup() {
   Serial.println("Enter servo number, angle, and steps: (e.g. 2 90)");
   delay(1000);
 
+  for(int i; i<5, i++;){
+    pwm.setPWM(i, 0, SERVOMIN + 140);
+    servoAngles[i] = 90;
+  }
 }
 
 void loop() {
+  
   goPreciseAll(50,50,50,50,50);
   delay(500);
   goPreciseAll(0,0,0,0,0);
   delay(1000);
   goPreciseAll(180,180,180,180,180);
   delay(500);
+  
 
 
   /*
@@ -327,6 +368,7 @@ void loop() {
       Serial.println("Invalid input. Use: servo angle steps (e.g., 2 90)");
     }
   }
-    */
+  */
+    
   
 }
