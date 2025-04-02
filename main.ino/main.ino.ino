@@ -28,12 +28,17 @@ Servo moves 0.45 degrees per pulse length count
 
 */
 
-//Arm Lengths in mm
-#define BaseOffset 89
-#define ShoulderElbow 150
-#define ElbowWrist 191.64
-#define WristWrist 11.66
+//Arm Lengths in m^-5
+#define BaseOffset 8900
+#define ShoulderElbow 15000
+#define ElbowWrist 19164
+#define WristWrist 1166
 #define WristPenTip TBC
+
+#define L1 BaseOffset
+#define L2 ShoulderElbow
+#define L3 ElbowWrist
+
 
 //Servo connector position on breakout board
 #define ShoulderRotate 0
@@ -103,7 +108,7 @@ float position[positionNum][3] =
   {2710,5870,90},
   {3450,5130,90},
   {3450,5130,0},
-  {2120,3820,00},
+  {2120,3820,0},
   {2120,3820,90},
   {1290,4650,90},
   {1290,4650,0},
@@ -125,7 +130,7 @@ int MinMax[5][2] =
 {
   {0, 180},
   {70, 150},
-  {60, 160},
+  {30, 130},
   {0, 157},
   {0, 156},
 };
@@ -253,46 +258,27 @@ void goPreciseAll(int sRot, int sLift, int elbow, int wRot, int wLift){
 
       servoAngles[j] = target[j]; // Update the stored position at the end
       pwm.setPWM(j, 0, SERVOMIN + pulses[j]);
-      
     }
     delay(20);
-    
   }
-
-
-
-
-
-
-
 }
-void determineAngles(float* shoulderLiftAngle, float * shoulderRotAngle, float * elbowAngle, float * wristAngle, float x, float y){
+
+void determineAngles(float * shoulderRotAngle, float* shoulderLiftAngle, float * elbowAngle, float * wristAngle, float x, float y){
 // This gives us the angle from 0 that the shoulder rotational joint should be at.
-  *shoulderRotAngle = tan(x/y); 
-  /*
+  *shoulderRotAngle = 180/M_PI *atan(x/y); 
+  
   // This gives us the distance from the center of the base in mm
-  float distance = x/sin(*shoulderRotAngle); 
+  float distance = sqrt(sq(x)+sq(y)); 
 
   //This gives us the angle from horizontle of the shoulder angle.
-  *shoulderLiftAngle = acos((ShoulderElbow*ShoulderElbow+distance*distance-ElbowWrist*ElbowWrist)/(2*ShoulderElbow*distance)); 
-
-  //This converts shoulderLiftAngle to be the angle from vertical
-  *shoulderLiftAngle = 180-*shoulderLiftAngle;
+  *shoulderLiftAngle = 180 - acos((sq(L2)+sq(distance)-sq(L3))/(2*L2*distance)); 
 
   //This gives us the angle between the Humerous and the forearm at the elbow
-  *elbowAngle = acos((ShoulderElbow*ShoulderElbow-ElbowWrist*ElbowWrist-distance*distance)/(2*ShoulderElbow*ElbowWrist));
-
-  //Converts the elbow degree to match with 90 degrees being the arm being at 90 degrees to the humerous
-  *elbowAngle  = 180-*elbowAngle;
+  *elbowAngle = 180 - acos((sq(L2)+sq(L3)-sq(distance))/(2*L2*L3));
 
   //This gives us the angle of the wrist such that the pencil remains vertical.
-  *wristAngle = 90-(180-*elbowAngle-*shoulderLiftAngle); 
-
-  */
+  *wristAngle = 90 + acos((sq(L3)+sq(distance)-sq(L2))/(2*distance*L3));
 }
-
-
-
 
 void servoInit(){
   int Pulses = 90/0.643;
@@ -302,8 +288,6 @@ void servoInit(){
   Pulses = 90/.44;
   pwm.setPWM(3, 0, SERVOMIN+Pulses);
   pwm.setPWM(4, 0, SERVOMIN+Pulses);
-
-
 }
 
 
@@ -313,6 +297,12 @@ void calculateAllAngles(){
   }
 
 }
+
+float srtest = 0;
+float sltest = 0;
+float etest = 0;
+float wrtest = 0;
+float wltest = 0;
 
 
 void setup() {
@@ -329,30 +319,28 @@ void setup() {
   //Set all servos to 90 degrees
   servoInit();
 
-  //calculateAllAngles();
-
+  calculateAllAngles();
 
   Serial.println("Setup Complete");
   Serial.println("Enter servo number, angle, and steps: (e.g. 2 90)");
   delay(1000);
-
-  for(int i; i<5, i++;){
-    pwm.setPWM(i, 0, SERVOMIN + 140);
-    servoAngles[i] = 90;
-  }
 }
 
+
 void loop() {
-  
+  determineAngles(&srtest, &sltest, &etest, &wltest, 200, 200);
+  Serial.println(srtest);
+  Serial.println(sltest);
+  Serial.println(etest);
+  Serial.println(wltest);
+  goPreciseAll(srtest, sltest, etest, 0, wltest);
+  /*
   delay(1000);
   for(int i = 0; i< positionNum; i++){
-    //goPreciseAll(angles[0][i],angles[1][i],angles[2][i],angles[3][i],position[3][i]);
-    delay(100);
+    goPreciseAll(angles[i][0],angles[i][1],angles[i][2],position[i][2],angles[i][3]);
+    Serial.println(i);
   }
-  
 
-
-  /*
   if (Serial.available()) {
     int servoNum = Serial.parseInt();
     int angle = Serial.parseInt();
@@ -369,7 +357,5 @@ void loop() {
       Serial.println("Invalid input. Use: servo angle steps (e.g., 2 90)");
     }
   }
-  */
-    
-  
+  */  
 }

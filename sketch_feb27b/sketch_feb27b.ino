@@ -142,8 +142,7 @@ void setup() {
   pwm.setOscillatorFrequency(27000000);
   pwm.setPWMFreq(SERVO_FREQ);  // Analog servos run at ~50 Hz updates
   delay(10);
-  Serial.println("Enter servo n
-  umber and angle (e.g., 2 90):");
+  Serial.println("Enter servo number and angle (e.g., 2 90):");
 }
 
 void loop() {/*
