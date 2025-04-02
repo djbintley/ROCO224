@@ -114,7 +114,7 @@ float position[positionNum][3] =
 };
 
 //Empty array to be filled with all the angles
-float angles [positionNum][4];
+float angles [positionNum][4] = {};
 
 //Array holding all current angles
 int servoAngles[5] = {90,90,90,90,90};
@@ -269,7 +269,7 @@ void goPreciseAll(int sRot, int sLift, int elbow, int wRot, int wLift){
 void determineAngles(float* shoulderLiftAngle, float * shoulderRotAngle, float * elbowAngle, float * wristAngle, float x, float y){
 // This gives us the angle from 0 that the shoulder rotational joint should be at.
   *shoulderRotAngle = tan(x/y); 
-
+  /*
   // This gives us the distance from the center of the base in mm
   float distance = x/sin(*shoulderRotAngle); 
 
@@ -286,7 +286,9 @@ void determineAngles(float* shoulderLiftAngle, float * shoulderRotAngle, float *
   *elbowAngle  = 180-*elbowAngle;
 
   //This gives us the angle of the wrist such that the pencil remains vertical.
-  *wristAngle = 90-(180-*elbowAngle-*shoulderLiftAngle);
+  *wristAngle = 90-(180-*elbowAngle-*shoulderLiftAngle); 
+
+  */
 }
 
 
@@ -327,7 +329,7 @@ void setup() {
   //Set all servos to 90 degrees
   servoInit();
 
-  calculateAllAngles();
+  //calculateAllAngles();
 
 
   Serial.println("Setup Complete");
@@ -342,12 +344,11 @@ void setup() {
 
 void loop() {
   
-  goPreciseAll(50,50,50,50,50);
-  delay(500);
-  goPreciseAll(0,0,0,0,0);
   delay(1000);
-  goPreciseAll(180,180,180,180,180);
-  delay(500);
+  for(int i = 0; i< positionNum; i++){
+    //goPreciseAll(angles[0][i],angles[1][i],angles[2][i],angles[3][i],position[3][i]);
+    delay(100);
+  }
   
 
 
