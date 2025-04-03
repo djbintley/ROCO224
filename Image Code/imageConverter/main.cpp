@@ -13,7 +13,7 @@
 #define CANVAS_HEIGHT 960
 #define CLEARANCE 30 //3mm clearence from the pen touching the edge
 
-#define IMAGE_PATH "C:\\Users\\dbintley\\OneDrive - University of Plymouth\\Year 2\\ROCO224\\Image Code\\img6.png"
+#define IMAGE_PATH "C:\\Users\\dbintley\\OneDrive - University of Plymouth\\Year 2\\ROCO224\\Image Code\\img7.png"
 #define THRESHOLD 127 //sets greyscale -> binary threshold
 
 #define PEN_SIZE 22        //true pen size

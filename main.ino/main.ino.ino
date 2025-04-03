@@ -29,10 +29,10 @@ Servo moves 0.45 degrees per pulse length count
 */
 
 //Arm Lengths in m^-5
-#define BaseOffset 8900
-#define ShoulderElbow 15000
-#define ElbowWrist 19164
-#define WristWrist 1166
+#define BaseOffset 890
+#define ShoulderElbow 1500
+#define ElbowWrist 1916.4
+#define WristWrist 116.6
 #define WristPenTip TBC
 
 #define L1 BaseOffset
@@ -48,74 +48,25 @@ Servo moves 0.45 degrees per pulse length count
 #define WristElevate 4
 
 //Number of positions for drawing
-#define positionNum 63
+#define positionNum 14
 
 //Array of all xy coordinates
 float position[positionNum][3] = 
 {
-  {2370,3790,0},
-  {0,0,0},
-  {2370,3790,0},
-  {2370,3790,90},
-  {1280,4880,90},
-  {1280,4880,0},
-  {1300,5080,0},
-  {1300,5080,90},
-  {2560,3820,90},
-  {2750,3850,90},
-  {1350,5250,90},
-  {1440,5380,90},
-  {2900,3920,90},
-  {3030,4010,90},
-  {1530,5510,90},
-  {1630,5630,90},
-  {3150,4110,90},
-  {3260,4220,90},
-  {1760,5720,90},
-  {1890,5810,90},
-  {3350,4350,90},
-  {3410,4510,90},
-  {2070,5850,90},
-  {2230,5910,90},
-  {3470,4670,90},
-  {3490,4870,90},
-  {2450,5910,90},
-  {2480,6010,90},
-  {2160,5990,90},
-  {1840,5880,90},
-  {1520,5660,90},
-  {1290,5340,90},
-  {1180,4860,90},
-  {1230,4540,90},
-  {1380,4220,90},
-  {1510,4060,90},
-  {1830,3830,90},
-  {2150,3720,90},
-  {2470,3710,90},
-  {2790,3770,90},
-  {3110,3940,90},
-  {3270,4070,90},
-  {3480,4390,90},
-  {3580,4710,90},
-  {3570,5030,90},
-  {3460,5350,90},
-  {3370,5510,90},
-  {3070,5800,90},
-  {2750,5950,90},
-  {2510,6010,90},
-  {2510,6010,0},
-  {2710,5870,0},
-  {2710,5870,90},
-  {3450,5130,90},
-  {3450,5130,0},
-  {2120,3820,0},
-  {2120,3820,90},
-  {1290,4650,90},
-  {1290,4650,0},
-  {1460,4260,0},
-  {1460,4260,90},
-  {1720,4000,90},
-  {1720,4000,0},
+        {810,1590,90},
+        {810,1590,0},
+        {630,1770,0},
+        {670,1950,0},
+        {930,1690,0},
+        {990,1850,0},
+        {850,1990,0},
+        {960,2080,0},
+        {640,2080,0},
+        {500,1700,0},
+        {820,2490,0},
+        {1130,1710,0},
+        {1000,2080,0},
+        {1000,2080,90}
 };
 
 //Empty array to be filled with all the angles
@@ -263,6 +214,11 @@ void goPreciseAll(int sRot, int sLift, int elbow, int wRot, int wLift){
   }
 }
 
+float srtest = 0;
+float sltest = 0;
+float etest = 0;
+float wrtest = 0;
+float wltest = 0;
 void determineAngles(float * shoulderRotAngle, float* shoulderLiftAngle, float * elbowAngle, float * wristAngle, float x, float y){
 // This gives us the angle from 0 that the shoulder rotational joint should be at.
   *shoulderRotAngle = 180/M_PI *atan(x/y); 
@@ -271,13 +227,14 @@ void determineAngles(float * shoulderRotAngle, float* shoulderLiftAngle, float *
   float distance = sqrt(sq(x)+sq(y)); 
 
   //This gives us the angle from horizontle of the shoulder angle.
-  *shoulderLiftAngle = 180 - acos((sq(L2)+sq(distance)-sq(L3))/(2*L2*distance)); 
+  *shoulderLiftAngle = (sq(L2)+sq(distance)-sq(L3))/(2*L2*distance);
+  *shoulderLiftAngle = 180 - 180/M_PI *acos(*shoulderLiftAngle); 
 
   //This gives us the angle between the Humerous and the forearm at the elbow
-  *elbowAngle = 180 - acos((sq(L2)+sq(L3)-sq(distance))/(2*L2*L3));
+  *elbowAngle = 180 - 180/M_PI *acos((sq(L2)+sq(L3)-sq(distance))/(2*L2*L3));
 
   //This gives us the angle of the wrist such that the pencil remains vertical.
-  *wristAngle = 90 + acos((sq(L3)+sq(distance)-sq(L2))/(2*distance*L3));
+  *wristAngle = 90 - 180/M_PI *acos((sq(L3)+sq(distance)-sq(L2))/(2*distance*L3));
 }
 
 void servoInit(){
@@ -298,11 +255,6 @@ void calculateAllAngles(){
 
 }
 
-float srtest = 0;
-float sltest = 0;
-float etest = 0;
-float wrtest = 0;
-float wltest = 0;
 
 
 void setup() {
@@ -323,24 +275,25 @@ void setup() {
 
   Serial.println("Setup Complete");
   Serial.println("Enter servo number, angle, and steps: (e.g. 2 90)");
-  delay(1000);
+  delay(3000);
 }
 
 
 void loop() {
-  determineAngles(&srtest, &sltest, &etest, &wltest, 200, 200);
-  Serial.println(srtest);
-  Serial.println(sltest);
-  Serial.println(etest);
-  Serial.println(wltest);
-  goPreciseAll(srtest, sltest, etest, 0, wltest);
-  /*
+  //determineAngles(&srtest, &sltest, &etest, &wltest, 2000, 2000);
+  //Serial.println(srtest);
+  //Serial.println(sltest);
+  //Serial.println(etest);
+  //Serial.println(wltest);
+  //goPreciseAll(srtest, sltest, etest, 90, wltest);
+  //delay(3000);
+  
   delay(1000);
   for(int i = 0; i< positionNum; i++){
     goPreciseAll(angles[i][0],angles[i][1],angles[i][2],position[i][2],angles[i][3]);
     Serial.println(i);
   }
-
+/*
   if (Serial.available()) {
     int servoNum = Serial.parseInt();
     int angle = Serial.parseInt();
