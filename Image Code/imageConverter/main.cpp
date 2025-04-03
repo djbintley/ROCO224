@@ -13,7 +13,7 @@
 #define CANVAS_HEIGHT 960
 #define CLEARANCE 30 //3mm clearence from the pen touching the edge
 
-#define IMAGE_PATH "C:\\Users\\dbintley\\OneDrive - University of Plymouth\\Year 2\\ROCO224\\Image Code\\img7.png"
+#define IMAGE_PATH "C:\\Users\\dbintley\\OneDrive - University of Plymouth\\Year 2\\ROCO224\\Image Code\\img2.png"
 #define THRESHOLD 127 //sets greyscale -> binary threshold
 
 #define PEN_SIZE 22        //true pen size
@@ -204,7 +204,7 @@ int main()
     while(waitKey(10)!=' ')
         imshow("View", frame);
 
-    cout<<"\t{"+to_string(drawPath.front().to.x*10)+","+to_string(drawPath.front().to.y*10)+",0},"<<endl;
+    cout<<"\t{"+to_string(drawPath.front().to.x*4+500)+","+to_string(drawPath.front().to.y*4+500)+",180},"<<endl;
     int count = 0;
     int lastx = 0;
     int lasty = 0;
@@ -213,20 +213,20 @@ int main()
         count++;
         if(i.type==draw)
         {
-            cout<<"\t{"+to_string(i.to.x*10)+","+to_string(i.to.y*10)+",90},"<<endl;
-            lastx = i.to.x*10;
-            lasty = i.to.y*10;
+            cout<<"\t{"+to_string(i.to.x*4+500)+","+to_string(i.to.y*4+500)+",90},"<<endl;
+            lastx = i.to.x*4+500;
+            lasty = i.to.y*4+500;
         }
         else
         {
-            cout<<"\t{"+to_string(lastx)+","+to_string(lasty)+",0},"<<endl;
-            cout<<"\t{"+to_string(i.to.x*10)+","+to_string(i.to.y*10)+",0},"<<endl;
-            cout<<"\t{"+to_string(i.to.x*10)+","+to_string(i.to.y*10)+",90},"<<endl;
+            cout<<"\t{"+to_string(lastx)+","+to_string(lasty)+",180},"<<endl;
+            cout<<"\t{"+to_string(i.to.x*4+500)+","+to_string(i.to.y*4+500)+",180},"<<endl;
+            cout<<"\t{"+to_string(i.to.x*4+500)+","+to_string(i.to.y*4+500)+",90},"<<endl;
             count += 2;
         }
     }
 
-    cout<<"\t{"+to_string(drawPath.back().to.x*10)+","+to_string(drawPath.back().to.y*10)+",0},"<<endl;
+    cout<<"\t{"+to_string(drawPath.back().to.x*4+500)+","+to_string(drawPath.back().to.y*4+500)+",180},"<<endl;
     cout<<"\tThe number of elements = "+to_string(count+2)<<endl;
     return 0;
 }
